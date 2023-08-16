@@ -1,63 +1,136 @@
-import java.util.Scanner;
+import java.util.*;
+import java.io.*;
+
+/*
+ * 가능할 수 없는 조건
+ * 1. 승/ 패 개수가 다름
+ * 2. 무승부가 분배되지 않음
+*/
 
 public class Main {
-    static int[] team1 = { 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 3, 3, 4 };
-    static int[] team2 = { 1, 2, 3, 4, 5, 2, 3, 4, 5, 3, 4, 5, 4, 5, 5 };
-    static int[] answer = new int[4];
-    static int[][] match = new int[6][3];
-    static int[][] result = new int[6][3];
+	static List<int[]> list;
+	static List<int[]> game;
 
-    static void DFS(int tc, int round) {
-        if (round == 15) {
-            if (answer[tc] != 0) return;
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringBuilder sb = new StringBuilder();
+		game = new ArrayList<>();
+		
+		// 2개 팀을 선택하기 위한 조합(total 15)
+		int[] p = new int[6];
+		int cnt = 5; // 2개 팀 선택
+		while(cnt >= 4) p[cnt--] = 1;
+		
+		do {
+			int[] tempGame = new int[2];
+			int index = 0;
+			for(int i=0; i<6; i++) {
+				if(p[i] == 1) {
+					tempGame[index++] = i;
+				}
+			}
+			game.add(tempGame);
+		} while(NP(p));
+		
+		// 조합 확인
+//		for(int i=0; i<game.size(); i++){
+//			System.out.println(Arrays.toString(game.get(i)));
+//		}
+		
+		for(int i=0; i<4; i++) {  // 4개의 대전표
+			list = new ArrayList<>();  // 대전표
+//			int winCnt=0, loseCnt=0;
+//			boolean flag = false;
+			
+			// 대전표 입력 받기
+			StringTokenizer st = new StringTokenizer(br.readLine());
+			for(int j=0; j<6; j++) {
+				int[] temp = new int[3];
+				for(int k=0; k<3; k++) {
+					temp[k] = Integer.parseInt(st.nextToken());
+//					if(k == 0)
+//						winCnt += temp[k];
+//					if(k == 2)
+//						loseCnt += temp[k];
+				}
+				list.add(temp);
+			}
+			
+			// 승/패 개수가 다름
+			if(!worldCup(0)) {  // winCnt != loseCnt | 
+				sb.append(0).append("\n");
+				continue;
+			} else {
+				sb.append(1).append("\n");
+			}
+			
+//			// 대전표 확인
+//			for(int j=0; j<6; j++)
+//				System.out.println(Arrays.toString(list.get(j)));
+//			System.out.println();
+//			
+//			sb.append(flag ? 0 : 1).append("\n");
+		}
+		
+		System.out.println(sb);
+	}
+	
+	private static boolean worldCup(int cnt) {  // cnt : 몇 번의 경기를 진행했는지 & 몇번째 경기 진행할지 정보
+		if(cnt == 15) {  // 15번의 경기
+			int sum = 0;
+			for(int i=list.size()-1; i>=0; i--) {
+				for(int j=2; j>=0; j--)
+					sum += list.get(i)[j];
+			}
+			
+			return sum == 0 ? true : false;
+		}
+		if(list.get(game.get(cnt)[0])[0] > 0 && list.get(game.get(cnt)[1])[2] > 0) {  // 승 - 패
+			list.get(game.get(cnt)[0])[0]--;
+			list.get(game.get(cnt)[1])[2]--;
+			if(worldCup(cnt+1)) return true;
+			list.get(game.get(cnt)[0])[0]++;
+			list.get(game.get(cnt)[1])[2]++;
+		}
+		if(list.get(game.get(cnt)[0])[1] > 0 && list.get(game.get(cnt)[1])[1] > 0) {  // 무 - 무
+			list.get(game.get(cnt)[0])[1]--;
+			list.get(game.get(cnt)[1])[1]--;
+			if(worldCup(cnt+1)) return true;
+			list.get(game.get(cnt)[0])[1]++;
+			list.get(game.get(cnt)[1])[1]++;
+		}
+		if(list.get(game.get(cnt)[0])[2] > 0 && list.get(game.get(cnt)[1])[0] > 0) {  // 패 - 승
+			list.get(game.get(cnt)[0])[2]--;
+			list.get(game.get(cnt)[1])[0]--;
+			if(worldCup(cnt+1)) return true;
+			list.get(game.get(cnt)[0])[2]++;
+			list.get(game.get(cnt)[1])[0]++;
+		}
+		return false;
+	}
+	
+	//NP 조합
+	private static boolean NP(int[] p) {
+		int i = 5; // 0~5
+		while(i>0 && p[i-1] >= p[i]) i--;
+		if(i == 0)
+			return false;
+		
+		int j = 5;
+		while(p[i-1] >= p[j]) j--;
+		swap(p, i-1, j);
+		
+		int k = 5;
+		while(k > i)
+			swap(p, i++, k--);
+		
+		return true;
+	}
+	
+	private static void swap(int[] p, int i, int j) {
+		int temp = p[i];
+		p[i] = p[j];
+		p[j] = temp;
+	}
 
-            for (int r = 0; r < 6; r++) {
-                for (int c = 0; c < 3; c++) {
-                    if (match[r][c] != result[r][c]) return;
-                }
-            }
-
-            answer[tc] = 1;
-            return;
-        }
-
-        int t1 = team1[round];
-        int t2 = team2[round];
-
-        result[t1][0]++;
-        result[t2][2]++;
-        DFS(tc, round + 1);
-        result[t1][0]--;
-        result[t2][2]--;
-
-        result[t1][1]++;
-        result[t2][1]++;
-        DFS(tc, round + 1);
-        result[t1][1]--;
-        result[t2][1]--;
-
-        result[t1][2]++;
-        result[t2][0]++;
-        DFS(tc, round + 1);
-        result[t1][2]--;
-        result[t2][0]--;
-    }
-
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-
-        for (int TC = 0; TC < 4; ++TC) {
-            for (int r = 0; r < 6; ++r) {
-                for (int c = 0; c < 3; c++) {
-                    match[r][c] = scanner.nextInt();
-                }
-            }
-            DFS(TC, 0);
-        }
-
-        for (int i = 0; i < 4; i++) {
-            System.out.print(answer[i] + " ");
-        }
-        System.out.println();
-    }
 }
