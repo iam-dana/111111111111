@@ -1,46 +1,47 @@
 from collections import deque
 
-
-def bfs(i, j, L):
+def bfs(i, j, L, n):
     def left():
         if board[nx][ny] in [1, 3, 4, 5]:
-            q.append([nx, ny, t + 1])
-            visited[nx][ny] = 1
+            q.append([nx, ny, t + 1, board[nx][ny]])
+            board[nx][ny] = -1
 
     def right():
         if board[nx][ny] in [1, 3, 6, 7]:
-            q.append([nx, ny, t + 1])
-            visited[nx][ny] = 1
+            q.append([nx, ny, t + 1, board[nx][ny]])
+            board[nx][ny] = -1
 
     def up():
         if board[nx][ny] in [1, 2, 5, 6]:
-            q.append([nx, ny, t + 1])
-            visited[nx][ny] = 1
+            q.append([nx, ny, t + 1, board[nx][ny]])
+            board[nx][ny] = -1
 
     def down():
         if board[nx][ny] in [1, 2, 4, 7]:
-            q.append([nx, ny, t + 1])
-            visited[nx][ny] = 1
+            q.append([nx, ny, t + 1, board[nx][ny]])
+            board[nx][ny] = -1
 
     global ans
     q = deque()
-    q.append([i, j, 0])
-    visited[i][j] = 1
+    q.append([i, j, 0, n])
+    board[i][j] = -1
 
     while q:
         s = q.popleft()
         x = s[0]
         y = s[1]
         t = s[2]
+        num = s[3]
         ans += 1
+
         if t == L-1:
             continue
-        num = board[x][y]
+
         for i in tunnel[num]:
             nx = x + dx[i]
             ny = y + dy[i]
             if 0 <= nx < N and 0 <= ny < M:
-                if not visited[nx][ny] and board[nx][ny]:
+                if board[nx][ny] >= 1:
                     if num == 1:
                         if x < nx:  # 다음 파이프가 아래에 있을 때
                             down()
@@ -108,7 +109,7 @@ tunnel = [
     [0, 3],  # 4  ㄴ
     [1, 3],  # 5  ⌜
     [1, 2],  # 6  ㄱ
-    [0, 2]  # 7  ⌟
+    [0, 2]   # 7  ⌟
 ]
 
 T = int(input())
@@ -118,10 +119,8 @@ for t in range(1, T + 1):
     ans = 0
     # 맵의 크기 N, M 맨홀 뚜껑의위치 R,C 탈출 소요 시간 L
     N, M, R, C, L = map(int, input().split())
-    visited = [[0] * M for _ in range(N)]
     for _ in range(N):
         board.append(list(map(int, input().split())))
-
-    bfs(R, C, L)
+    bfs(R, C, L, board[R][C])
 
     print("#{} {}".format(t, ans))
