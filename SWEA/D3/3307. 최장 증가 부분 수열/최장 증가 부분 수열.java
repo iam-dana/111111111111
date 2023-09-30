@@ -1,14 +1,13 @@
 
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
 public class Solution {
 
-	static int N, arr[], ans[], answer;
-	
+	static int N, a, answer, i, start, end, mid;
+	static List<Integer> lis;
+
+
 	public static void main(String[] args) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringBuilder sb = new StringBuilder();
@@ -16,29 +15,37 @@ public class Solution {
 		int T = Integer.parseInt(br.readLine());
 		for (int t = 1; t <= T; t++) {
 			N = Integer.parseInt(br.readLine());
-			arr = new int[N];
-			ans = new int[N];
-			ans[0] = 1;
+			lis = new ArrayList<>();
 			answer = 0;
-			
+
 			st = new StringTokenizer(br.readLine());
-			for (int i = 0; i < N; i++) {
-				arr[i] = Integer.parseInt(st.nextToken());
-			}
-			
-			for (int i = 1; i < N; i++) {
-				int tmp = 0;
-				for (int j = 0; j < i; j++) {
-					if (arr[j] < arr[i]) {
-						tmp = Math.max(tmp, ans[j]);
+			for (i = 0; i < N; i++) {
+				a = Integer.parseInt(st.nextToken());
+				if(i == 0) {
+					lis.add(a);
+					continue;
+				}
+				if (a > lis.get(lis.size()-1)) {
+					lis.add(a);
+				} else {
+					start = 0;
+					end = lis.size();
+					
+					while (start < end) {
+						mid = (end+start)/2;
+						
+						if (a <= lis.get(mid)) {
+							end = mid;
+						} else {
+							start = mid+1;
+						}
 					}
-				}	
-				ans[i] = tmp+1;
+					lis.remove(end);
+					lis.add(end, a);
+				}
+				
 			}
-			for (int i = 0; i < N; i++) {
-				answer = Math.max(answer, ans[i]);
-			}
-			sb.append("#").append(t).append(" ").append(answer).append("\n");
+			sb.append("#").append(t).append(" ").append(lis.size()).append("\n");
 		}
 		System.out.println(sb);
 	}
