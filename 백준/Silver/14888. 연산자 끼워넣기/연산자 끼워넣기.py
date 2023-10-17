@@ -1,44 +1,39 @@
-import sys, itertools
-
+import sys
 input = sys.stdin.readline
+sys.setrecursionlimit(100000)
 
-N = int(input())
-num = list(map(int, input().split()))
-tmp = list(map(int, input().split()))
-arr = []
-min_ans = 1000000000
-max_ans = -1000000000
+n = int(input())
+data = list(map(int, input().split()))
+add, sub, mult, div = map(int, input().split())
 
-for i in range(4):
-    if i == 0:
-        for _ in range(tmp[i]):
-            arr.append("plus")
-    elif i == 1:
-        for _ in range(tmp[i]):
-            arr.append("minus")
-    elif i == 2:
-        for _ in range(tmp[i]):
-            arr.append("mul")
+ans_min = 1e9
+ans_max = -1e9
+
+
+def dfs(i, ans):
+    global ans_max, ans_min, add, sub, mult, div
+    if i == n - 1:
+        ans_max = max(ans, ans_max)
+        ans_min = min(ans, ans_min)
     else:
-        for _ in range(tmp[i]):
-            arr.append("div")
+        if add > 0:
+            add -= 1
+            dfs(i + 1, ans + data[i + 1])
+            add += 1
+        if sub > 0:
+            sub -= 1
+            dfs(i + 1, ans - data[i + 1])
+            sub += 1
+        if mult > 0:
+            mult -= 1
+            dfs(i + 1, ans * data[i + 1])
+            mult += 1
+        if div > 0:
+            div -= 1
+            dfs(i + 1, int(ans / data[i + 1]))
+            div += 1
 
-for c in itertools.permutations(arr, N-1):
-    tmp = num[0]
-    for n in range(N-1):
-        if c[n] == "plus":
-             tmp += num[n+1]
-        elif c[n] == "minus":
-             tmp -= num[n+1]
-        if c[n] == "mul":
-             tmp *= num[n+1]
-        if c[n] == "div":
-            if tmp < 0:
-                tmp = ((-1*tmp)//num[n+1])*-1
-            else:
-                tmp //= num[n+1]
-    min_ans = min(min_ans, tmp)
-    max_ans = max(max_ans, tmp)
 
-print(max_ans)
-print(min_ans)
+dfs(0, data[0])
+print(ans_max)
+print(ans_min)
