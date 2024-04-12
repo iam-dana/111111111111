@@ -1,5 +1,3 @@
-import sys
-N, M = map(int, sys.stdin.readline().split())
-
+N, M = map(int, input().split())
 for i in range(N):
-    print(sys.stdin.readline().strip()[::-1])
+    print(input().strip()[::-1])
