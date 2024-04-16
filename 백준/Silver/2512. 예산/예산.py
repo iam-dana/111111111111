@@ -24,8 +24,8 @@ while start <= end:
             tmp += mid
     if tmp <= total:
         ans = max(mid, ans)
-        start += 1
+        start = mid+1
     else:
-        end -= 1
+        end = mid-1
 
 print(ans)
