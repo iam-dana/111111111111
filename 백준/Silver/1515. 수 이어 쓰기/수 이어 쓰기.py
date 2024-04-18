@@ -2,11 +2,11 @@ import sys
 
 input = sys.stdin.readline
 
-S = list(input().rstrip())
+S = input().rstrip()
 idx = 0
 
 for i in range(1, sys.maxsize):
-    now = list(str(i))
+    now = str(i)
 
     for j in range(len(now)):
         if idx == len(S):
