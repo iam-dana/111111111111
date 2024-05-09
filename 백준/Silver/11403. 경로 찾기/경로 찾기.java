@@ -4,6 +4,7 @@ import java.util.*;
 public class Main {
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringBuilder ans = new StringBuilder();
 		StringTokenizer st;
 
 		int N = Integer.parseInt(br.readLine());
@@ -26,11 +27,12 @@ public class Main {
 			}
 		}
 
-		for(int[] m : map){
-			for (int element : m) {
-				System.out.print(element+" ");
+		for (int[] m : map) {
+			for (int ele : m) {
+				ans.append(ele).append(" ");
 			}
-			System.out.println();
+			ans.append("\n");
 		}
+		System.out.println(ans);
 	}
 }
