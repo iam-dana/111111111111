@@ -19,20 +19,13 @@ public class Main {
             for (int j = i + 1; j < N; j++) {
                 String s2 = arr[j];
                 int len = Math.min(s1.length(), s2.length());
-                boolean flag = false;
+                int cnt = 0;
                 for (int k = 0; k < len; k++) {
-                    if (s1.charAt(k) != s2.charAt(k)) {
-                        if (k > max) {
-                            max = k;
-                            S = s1;
-                            T = s2;
-                        }
-                        flag = true;
-                        break;
-                    }
+                    if (s1.charAt(k) == s2.charAt(k)) cnt++;
+                    else break;
                 }
-                if (!flag && len > max) {
-                    max = len;
+                if (max < cnt) {
+                    max = cnt;
                     S = s1;
                     T = s2;
                 }
@@ -42,4 +35,3 @@ public class Main {
         System.out.println(T);
     }
 }
-
