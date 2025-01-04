@@ -1,62 +1,53 @@
 import java.io.*;
 import java.util.*;
 
-// 9252 LCS2
 public class Main {
+    static String str1, str2;
+    static int n, m, count;
+    static int[][] dp;
 
-	static int N, M;
-	static String inputA, inputB;
-	static int[][] dp;
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringBuilder sb = new StringBuilder();
 
-	public static void main(String[] args) throws Exception {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        str1 = br.readLine();
+        str2 = br.readLine();
+        n = str1.length();
+        m = str2.length();
 
-		// 1. 입력받기
-		inputA = br.readLine();
-		inputB = br.readLine();
-		N = inputA.length();
-		M = inputB.length();
+        dp = new int[n + 1][m + 1];
+        count = LCS();
 
-		// 2. 길이 구하기
-		int ans = getLCSLength();
+        if (count > 0) {
+            while (n > 0 && m > 0) {
+                if (str1.charAt(n - 1) == str2.charAt(m - 1)) {
+                    sb.insert(0, str1.charAt(n-1));
+                    n--;
+                    m--;
+                } else if (dp[n][m] == dp[n - 1][m]) {
+                    n--;
+                } else if (dp[n][m] == dp[n][m - 1]) {
+                    m--;
+                }
+            }
+        }
+        bw.write(count+"\n"+sb);
+        bw.close();
+    }
 
-		// 3. 문자열 구하기
-		StringBuilder sb = new StringBuilder();
-		while ( N != 0 && M != 0) {
-			if (inputA.charAt(N - 1) == inputB.charAt(M - 1)) {
-				sb.insert(0, inputA.charAt(N - 1));
-				N--;
-				M--;
-			} else if (dp[N][M] == dp[N - 1][M]) {
-				N--;
-			} else if (dp[N][M] == dp[N][M - 1]) {
-				M--;
-			}
-		}
-		// LCS 문자열 길이 출력
-		bw.write(ans + "\n" + sb.toString());
-
-		bw.flush();
-		bw.close();
-		br.close();
-	}
-
-	static int getLCSLength() {
-		dp = new int[N+1][M+1];
-		for (int i = 1; i <= N; i++) {
-			for (int j = 1; j <= M; j++) {
-				// 2-1. 같으면 추가
-				if (inputA.charAt(i-1) == inputB.charAt(j-1)) {
-					dp[i][j] = dp[i - 1][j - 1] + 1;
-				}
-				// 2-2. 다르면
-				else {
-					dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
-				}
-			}
-		}
-		return dp[N][M];
-	}
-
+    static int LCS() {
+        for (int i=1; i<=n; i++) {
+            char s1 = str1.charAt(i-1);
+            for (int j=1; j<=m; j++) {
+                char s2 = str2.charAt(j-1);
+                if (s1 == s2) {
+                    dp[i][j] = dp[i-1][j-1]+1;
+                } else {
+                    dp[i][j] = Math.max(dp[i-1][j], dp[i][j-1]);
+                }
+            }
+        }
+        return dp[n][m];
+    }
 }
